@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Russo+One&family=Orbitron:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Meta tags for SEO and crawler control -->
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="googlebot" content="noindex, nofollow" />
+    <title>Google Play UI</title>
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+  </head>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Russo One", "Orbitron", sans-serif;
+    }
+
+    body,
+    html {
+      height: 100%;
+      font-family: Arial, sans-serif;
+      user-select: none;
+    }
+    h3 {
+      font-family: "Russo One", "Orbitron", sans-serif;
+      letter-spacing: 0.5px;
+    }
+
+    .layout {
+      display: flex;
+      height: 100vh;
+      /* overflow: hidden; */
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 100px;
+      background: #fff;
+      /* border-right: 1px solid #eee; */
+      padding-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 10;
+    }
+
+    .sidebar .logo {
+      margin-bottom: 20px;
+    }
+
+    .sidebar .logo i {
+      font-size: 60px;
+      color: #1a73e8;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #777;
+      font-size: 12px;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .nav-item i {
+      font-size: 30px;
+      margin-bottom: 5px;
+    }
+
+    .nav-item.active,
+    .nav-item:hover {
+      color: #1a73e8;
+    }
+
+    /* Main wrapper */
+    .main {
+      flex: 1;
+      margin-left: 100px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .top-header {
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      background: #fff;
+      /* border-bottom: 1px solid #eee; */
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      gap: 20px;
+    }
+
+    /* Search bar in header */
+    .search-bar {
+      display: flex;
+      align-items: center;
+      background: #f1f3f4;
+      padding: 8px 12px;
+      border-radius: 24px;
+      flex: 1;
+      max-width: 700px;
+      margin-right: 20px;
+    }
+
+    .search-bar i {
+      font-size: 24px;
+      margin-right: 8px;
+      color: #5f6368;
+    }
+
+    .search-bar input {
+      border: none;
+      background: transparent;
+      outline: none;
+      width: 100%;
+      font-size: 16px;
+      color: #202124;
+    }
+
+    .search-bar input::placeholder {
+      color: #5f6368;
+    }
+
+    .profile-icons {
+      display: flex;
+      gap: 20px;
+    }
+
+    .profile-icons i {
+      font-size: 28px;
+      cursor: pointer;
+      color: #555;
+    }
+
+    /* Content */
+    .content {
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .content .card {
+      display: flex;
+      align-items: center;
+      width: calc(33.333% - 20px);
+      gap: 10px;
+      cursor: pointer;
+      border-radius: 10px;
+      /* border: 1px solid #eee; */
+      padding: 5px;
+      transition: 0.3s;
+    }
+    .content .card:hover {
+      background-color: #f1f3f4;
+    }
+    .content .card img,
+    .content .card.card-stacked .bottom img {
+      width: 80px;
+      height: auto;
+      border-radius: 8px;
+      pointer-events: none;
+      pointer-events: none;
+    }
+    .content .card .info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .content .card .info .rating {
+      text-align: right;
+    }
+    .content .card.card-stacked {
+      flex-direction: column !important;
+    }
+    .content .card.card-stacked .banner {
+      width: 100%;
+      height: auto;
+    }
+    .content .card.card-stacked .bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      gap: 10px;
+    }
+    @media (max-width: 992px) {
+      .content .card {
+        width: 100%;
+      }
+    }
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 60px;
+        padding-top: 20px;
+      }
+
+      .sidebar .logo i {
+        font-size: 40px;
+      }
+
+      .nav-item span {
+        display: none;
+      }
+
+      .main {
+        margin-left: 60px;
+      }
+
+      .search-bar {
+        max-width: none;
+        margin-right: 10px;
+      }
+
+      .search-bar input {
+        font-size: 14px;
+      }
+    }
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      text-align: center;
+    }
+    .modal.show {
+      display: flex !important;
+    }
+    .modal .modal-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+    .modal .modal-content h2 {
+      margin-bottom: 15px;
+    }
+    .modal .modal-content p {
+      margin-bottom: 20px;
+    }
+    .modal .modal-content button {
+      background: #1a73e8;
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .modal .modal-content button:hover {
+      background: #155ab6;
+    }
+    .modal span.close {
+      position: absolute;
+      right: 10px;
+      cursor: pointer;
+      top: -2px;
+      font-size: 50px;
+      color: #ee00008f;
+      display: block;
+      font-weight: bold;
+    }
+
+    .modal .modal-content img {
+      width: 50%;
+      height: auto;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+  </style>
+  <body>
+    <div class="layout">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="logo">
+          <i class="material-icons">play_circle_filled</i>
+        </div>
+        <div class="nav-item active">
+          <i class="material-icons">sports_esports</i>
+          <span>Games</span>
+        </div>
+        <div class="nav-item">
+          <i class="material-icons">apps</i>
+          <span>Apps</span>
+        </div>
+        <div class="nav-item nav-item-search">
+          <i class="material-icons">search</i>
+          <span>Search</span>
+        </div>
+        <div class="nav-item">
+          <i class="material-icons">child_care</i>
+          <span>Kids</span>
+        </div>
+      </aside>
+
+      <!-- Main area -->
+      <div class="main">
+        <header class="top-header">
+          <div class="search-bar">
+            <i class="material-icons">search</i>
+            <input
+              type="text"
+              name="search"
+              placeholder="Search for apps & games..."
+            />
+          </div>
+          <div class="profile-icons">
+            <i class="material-icons">notifications</i>
+            <i class="material-icons">help_outline</i>
+          </div>
+        </header>
+
+        <section class="content">
+          <div class="card card-stacked">
+            <img
+              class="banner"
+              src="https://i.postimg.cc/qv7s1VVs/gta-5-apk.jpg"
+            />
+            <div class="bottom">
+              <img
+                class="app-icon"
+                src="https://upload.wikimedia.org/wikipedia/en/a/a5/Grand_Theft_Auto_V.png"
+              />
+              <div class="info">
+                <h3>GTA 5 Mobile</h3>
+                <p>Action • Open World</p>
+                <p class="rating"><span>★ 4.8</span></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card card-stacked">
+            <img
+              class="banner"
+              src="https://i.gadgets360cdn.com/large/forza-horizon-4_1528673067172.jpg"
+            />
+            <div class="bottom">
+              <img
+                class="app-icon"
+                src="https://i.ibb.co/bR6gzTfZ/Forza-Horizon-4.png"
+              />
+              <div class="info">
+                <h3>Forza Horizon 4</h3>
+                <p>Racing, Open World</p>
+                <p class="rating"><span>★ 4.3</span></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card card-stacked">
+            <img
+              class="banner"
+              src="https://img.utdstc.com/screen/ee9/109/ee9109e1ec8a4a411614c418b5560e0d67e0dd6e0a21a90e48ac093279db80d2:600"
+            />
+            <div class="bottom">
+              <img
+                class="app-icon"
+                src="https://i.ibb.co/p6PFPqWn/Drive-Zone-Online.webp"
+              />
+              <div class="info">
+                <h3>Drive Zone Online Mod</h3>
+                <p>Racing, Multiplayer</p>
+                <p class="rating"><span>★ 4.1</span></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://findapkmods.com/assets/img/app_images/7sl0V3i/f3d1670e-319c-4135-81f4-ff6dc4c866f6.jpg"
+            />
+            <div class="info">
+              <h3>FC Mobile 25 Mod</h3>
+              <p>Sports Simulation</p>
+              <p class="rating"><span>★ 4.1</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/guEN1aMLEf5unjseVkTqWget3cVFRHmKqeyNxU1cQqLQUuV_DioVwfBMFc3SfjAgg7M=s48-rw"
+            />
+            <div class="info">
+              <h3>Kingdom Rush 5 Mod</h3>
+              <p>Tower Defense</p>
+              <p class="rating"><span>★ 4.9</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/vs4nOeJ_kPDLImyOuf07ZOmZv0_6zRjY7uBStFCQpPLFYl40Bk7OrsTAqK9RQZd8doQ=s48-rw"
+            />
+            <div class="info">
+              <h3>Bus Simulator Mod</h3>
+              <p>Driving Simulation</p>
+              <p class="rating"><span>★ 4.2</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/XRlCpj22PFJuFK43QcE3u5RxmoNUed7YO_zG-6F1PCqjrBIIURbTBDvTgLVVIk5pNeY=w240-h480-rw"
+            />
+            <div class="info">
+              <h3>GTA San Andreas Mod</h3>
+              <p>Action Adventure</p>
+              <p class="rating"><span>★ 4.8</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://findapkmods.com/assets/img/app_images/yfGBNMn/eeeefwf.jpg"
+            />
+            <div class="info">
+              <h3>Soccer Manager 2025 Mod</h3>
+              <p>Sports Management</p>
+              <p class="rating"><span>★ 4.3</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTZkiwYspk7LTkxhO_Nfd-OlexJ0EwGpzmxg&s"
+            />
+            <div class="info">
+              <h3>World Cricket Championship 3 Mod</h3>
+              <p>Sports Simulation</p>
+              <p class="rating"><span>★ 4.7</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img class="app-icon" src="https://i.ibb.co/hRND3TrP/hay-day.jpg" />
+            <div class="info">
+              <h3>Hay Day Mod</h3>
+              <p>Farming, Casual</p>
+              <p class="rating"><span>★ 4.4</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img class="app-icon" src="https://i.ibb.co/DHwqzgr4/Roblox.png" />
+            <div class="info">
+              <h3>Roblox Mod</h3>
+              <p>Adventure, Sandbox</p>
+              <p class="rating"><span>★ 4.6</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://i.ibb.co/6RHsmSRz/Among-us.jpg"
+            />
+            <div class="info">
+              <h3>Among Us Mod</h3>
+              <p>Multiplayer, Social Deduction</p>
+              <p class="rating"><span>★ 4.5</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://upload.wikimedia.org/wikipedia/en/a/a5/Grand_Theft_Auto_V.png"
+            />
+            <div class="info">
+              <h3>GTA 5 Mobile</h3>
+              <p>Action • Open World</p>
+              <p class="rating"><span>★ 4.8</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://i.ibb.co/bR6gzTfZ/Forza-Horizon-4.png"
+            />
+            <div class="info">
+              <h3>Forza Horizon 4</h3>
+              <p>Racing, Open World</p>
+              <p class="rating"><span>★ 4.3</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://i.ibb.co/p6PFPqWn/Drive-Zone-Online.webp"
+            />
+            <div class="info">
+              <h3>Drive Zone Online Mod</h3>
+              <p>Racing, Multiplayer</p>
+              <p class="rating"><span>★ 4.1</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/XFO06jrueKDVlHUis9H-qXVBS3RiXHOOW1pkCQHuiV_70tnXJbsnbnlQDxhI-EUHHw=w240-h480-rw"
+            />
+            <div class="info">
+              <h3>Racing Master Mod</h3>
+              <p>Racing Simulation</p>
+              <p class="rating"><span>★ 4.1</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/VpbSiyX5pH1YaKlyuRPk-sTRq8_7_WZjzHE7Lze4f_k-lyc3hanDvbzXV9EfcNIfZns=s48-rw"
+            />
+            <div class="info">
+              <h3>Football Superstar 2 Mod</h3>
+              <p>Sports RPG</p>
+              <p class="rating"><span>★ 4.9</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="data:image/webp;base64,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"
+            />
+            <div class="info">
+              <h3>OTR - Offroad Car Driving Game Mod</h3>
+              <p>Offroad Simulation</p>
+              <p class="rating"><span>★ 4.2</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/UA6HkPW2v9q7gQrVlMIWccXcDiFMLe6jISQG3WCVO0zHnL6pmX46Pbv_kZh6W6NhdVvx=s48-rw"
+            />
+            <div class="info">
+              <h3>One Piece Bounty Rush Mod</h3>
+              <p>Action Multiplayer</p>
+              <p class="rating"><span>★ 4.8</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/UVjsYY6tnVq2qqtuz0BexvhIA080C-pfWalPy3Py4GD4nE-dt_mAZxuAOVgEod3teLU=s48-rw"
+            />
+            <div class="info">
+              <h3>Rally Fury Mod</h3>
+              <p>Racing Simulation</p>
+              <p class="rating"><span>★ 4.4</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://findapkmods.com/assets/img/app_images/4iYNWvO/Agar.io%20Mod.png"
+            />
+            <div class="info">
+              <h3>Agar.io Mod</h3>
+              <p>Action Multiplayer</p>
+              <p class="rating"><span>★ 4.7</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/60xiiOFbPnCXbWZ2fL-4Dx2aUkT8ojIqwNec-qmoTzOL52L_mVVFev_WD6AKekAI5YPa"
+            />
+            <div class="info">
+              <h3>Dream League Soccer 25 Mod</h3>
+              <p>Sports Simulation</p>
+              <p class="rating"><span>★ 4.4</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://findapkmods.com/assets/img/app_images/SeVrcl1/avatarworld.png"
+            />
+            <div class="info">
+              <h3>Avatar World Mod</h3>
+              <p>Virtual World</p>
+              <p class="rating"><span>★ 4.6</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://platinapk.com/wp-content/uploads/2024/05/Chikkii-mod-apk-featured-300x300.webp"
+            />
+            <div class="info">
+              <h3>Chikii Mod</h3>
+              <p>Cloud Gaming</p>
+              <p class="rating"><span>★ 4.5</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://findapkmods.com/assets/img/app_images/ntOHv9E/Monopoli%20GO%20Mod.png"
+            />
+            <div class="info">
+              <h3>Monopoly Go Mod</h3>
+              <p>Board Game</p>
+              <p class="rating"><span>★ 4.8</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://images.genius.com/2e29ff0a24286e4e4254cc4a3d12d1bd.1000x1000x1.jpg"
+            />
+            <div class="info">
+              <h3>eFootball 2025 Mod</h3>
+              <p>Sports Simulation</p>
+              <p class="rating"><span>★ 4.3</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/RIHmknOlj55jKhugiS2b2p4u1yDuhV0lcGwyxh_Woy7o_Jfr6Fu9MpM4OJTaHo8ywp8"
+            />
+            <div class="info">
+              <h3>Archero 2 Mod</h3>
+              <p>Action Roguelike</p>
+              <p class="rating"><span>★ 4.1</span></p>
+            </div>
+          </div>
+
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/uzadD3goms7VII06YZGiY87nyScUgJh5Opl55jzZKY0wGv_2A8VgDQk3Le0oBnHOlDI7=w240-h480-rw"
+            />
+            <div class="info">
+              <h3>Apex Racing Mod</h3>
+              <p>Arcade Racing</p>
+              <p class="rating"><span>★ 4.1</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/gknvYUq7kZ-Kty6IraCg3_0my0SRBkK-5yceJ9wWBy5Gc29od2nv1Tod71cB2iFw1JQ=s48-rw"
+            />
+            <div class="info">
+              <h3>Real Moto 2 Mod</h3>
+              <p>Racing Simulation</p>
+              <p class="rating"><span>★ 4.9</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://lh3.googleusercontent.com/fMosGq5KEfBxSZ-qFBzbik0I1ZK6A_aI5KmT37Q2t4PbBTbe66XCxx5Qnb6YyR3m0w=h315"
+            />
+            <div class="info">
+              <h3>StarParks Mod</h3>
+              <p>Augmented Reality</p>
+              <p class="rating"><span>★ 4.2</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://petitchampi.com/cdn/shop/articles/legend-of-mushroom-codes-2.jpg?v=1715821093"
+            />
+            <div class="info">
+              <h3>Legend of Mushroom Mod</h3>
+              <p>Idle RPG</p>
+              <p class="rating"><span>★ 4.8</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://findapkmods.com/assets/img/app_images/ziFnpV1/stumble.png"
+            />
+            <div class="info">
+              <h3>Stumble Guys Mod</h3>
+              <p>Party Battle</p>
+              <p class="rating"><span>★ 4.3</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/-dkLgwYiDOWhrSwRGRGXsu_-VmU13lC_SWbsv08GtgaNrOfanJHaBF3g7b5Zww23LbxR=s48-rw"
+            />
+            <div class="info">
+              <h3>UNO Mod</h3>
+              <p>Card Game</p>
+              <p class="rating"><span>★ 4.7</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/HWVNuIGO3NfdVBCmw_rQGTfINA7pdoedynIZbC8TcoNKvd-aAkzk7XboE0zDZE0_CF8=s48-rw"
+            />
+            <div class="info">
+              <h3>Homescapes Mod</h3>
+              <p>Puzzle Simulation</p>
+              <p class="rating"><span>★ 4.4</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQpEoew3DioeofkpKYdmgLFLV2HFWMWr0X1csBxxjB0KzRvN1kJnme47-3yQg3vrIaH1gfufUNOCGR0NewNAeGtHu9lEAqMVmEYrhqvIbJIGg"
+            />
+            <div class="info">
+              <h3>FarmVille 2 Mod</h3>
+              <p>Farming Simulation</p>
+              <p class="rating"><span>★ 4.6</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/3JxvoqadERgdvWwh_og8ZSvZuf7I4ZdMKgglXjzySlDuAFnIpZq4UxtEzL9CoimD=w526-h296-rw"
+            />
+            <div class="info">
+              <h3>One State RP Mod</h3>
+              <p>Role-Playing</p>
+              <p class="rating"><span>★ 4.5</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://an1.ca/wp-content/uploads/2024/07/super-sus-MOD-APK-An1.webp"
+            />
+            <div class="info">
+              <h3>Super Sus Mod</h3>
+              <p>Social Deduction</p>
+              <p class="rating"><span>★ 4.8</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/87ZWG0h0ohRprr_B-ikfu66EgiL__wNWROk9yW5xl918h0RSzfAjRC4OnIaXhTux_mRW=s48-rw"
+            />
+            <div class="info">
+              <h3>Township Mod</h3>
+              <p>City Building</p>
+              <p class="rating"><span>★ 4.3</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/67AtnAZEKOR_bm1MAYaapEyMFsKyLQzPMoyg6dmk-x8GzfmhEhcvDWSsHJLP_bkMAPE=s48-rw"
+            />
+            <div class="info">
+              <h3>War Robots Mod</h3>
+              <p>Multiplayer Shooter</p>
+              <p class="rating"><span>★ 4.1</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTnbNdQK5kIfM9oQh_SGRBHJcD1sO6_Iml4Q&s"
+            />
+            <div class="info">
+              <h3>Dragon Ball Legends Mod</h3>
+              <p>Action RPG</p>
+              <p class="rating"><span>★ 4.1</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxBtnU0bP-vvmkwA0VM1Hd0qT0X2OoW70roA&s"
+            />
+            <div class="info">
+              <h3>Asphalt Legends Unite Mod</h3>
+              <p>Arcade Racing</p>
+              <p class="rating"><span>★ 4.9</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://findapkmods.com/assets/img/app_images/FVIkE6Q/WWE%20Mayhem%20Mod.jpg"
+            />
+            <div class="info">
+              <h3>WWE Mayhem Mod</h3>
+              <p>Action Sports</p>
+              <p class="rating"><span>★ 4.2</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://findapkmods.com/assets/img/app_images/lYSGFmv/wink.png"
+            />
+            <div class="info">
+              <h3>Wink Mod</h3>
+              <p>Video Editing</p>
+              <p class="rating"><span>★ 4.8</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/59d_-WK2BNiMdcPEc7lCbhpUTIRA3gKAsB87EOM46jgTd9qEtwEEnCC-LhQWpnpD5w=s48-rw"
+            />
+            <div class="info">
+              <h3>Day R Survival Mod</h3>
+              <p>Survival RPG</p>
+              <p class="rating"><span>★ 4.4</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://findapkmods.com/assets/img/app_images/mbyXAMz/download.jpg"
+            />
+            <div class="info">
+              <h3>Hide Online Mod</h3>
+              <p>Multiplayer Shooter</p>
+              <p class="rating"><span>★ 4.7</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://a.storyblok.com/f/178900/1200x848/21f5b149cf/jujutsu-kaisen-phantom-parade-kv.jpeg/m/filters:quality(95)format(webp)"
+            />
+            <div class="info">
+              <h3>Jujutsu Kaisen Phantom Parade Mod</h3>
+              <p>Action RPG</p>
+              <p class="rating"><span>★ 4.4</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/omNaKMRY2KBKjq0rS5CrNtBW4JzRP5EZUedVW7467PHpQk6KmepS7-mnCYsQvfETov0=s48-rw"
+            />
+            <div class="info">
+              <h3>Metalstorm Mod</h3>
+              <p>Air Combat</p>
+              <p class="rating"><span>★ 4.6</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/QzqnyTdceDaRpCsCkJ66H-2fegT-N9RLPnEv4YWFOvcZa2ZFGvznXV-m66d6TT6siw=w526-h296-rw"
+            />
+            <div class="info">
+              <h3>Flex City Online RP Car Game Mod</h3>
+              <p>Role-Playing</p>
+              <p class="rating"><span>★ 4.5</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/goeKkAkdb34I3WrJB3MJJuMlVQsMKUALV0kuC-qoBuCwEKu_wQhtbeEg6y6WglbYDkU=w526-h296-rw"
+            />
+            <div class="info">
+              <h3>MadOut 2 Grand Auto Racing Mod</h3>
+              <p>Open World</p>
+              <p class="rating"><span>★ 4.8</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/T37CGCkN_nNbJEQe2jlY7urAPLZJiit6YUNK4HwUs9UXYM07uNn34A24ygZQwQvrK7A=s48-rw"
+            />
+            <div class="info">
+              <h3>Need for Speed Mobile Mod</h3>
+              <p>Racing Game</p>
+              <p class="rating"><span>★ 4.3</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/LByrur1mTmPeNr0ljI-uAUcct1rzmTve5Esau1SwoAzjBXQUby6uHIfHbF9TAT51mgHm=s48-rw"
+            />
+            <div class="info">
+              <h3>Clash of Clans Mod</h3>
+              <p>Strategy Game</p>
+              <p class="rating"><span>★ 4.1</span></p>
+            </div>
+          </div>
+
+          <!--  -->
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7U4_kixJVCfrH41HLbWxSzZtXCJtqXDbXPQ&s"
+            />
+            <div class="info">
+              <h3>Shadow Fight 2 Mod</h3>
+              <p>Action Fighting</p>
+              <p class="rating"><span>★ 4.1</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRscIyoAWJHRSAmR2ft2WjCwNWMpArH7KpIaw&s"
+            />
+            <div class="info">
+              <h3>Call of Duty Mod</h3>
+              <p>First-Person Shooter</p>
+              <p class="rating"><span>★ 4.9</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStxnr9p_7YnduzWxdrxJgDkj9S1hiF5p7s0g&s"
+            />
+            <div class="info">
+              <h3>FIFA Mobile 2022 Mod</h3>
+              <p>Sports Simulation</p>
+              <p class="rating"><span>★ 4.2</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS45eleB-kx-M-Uj9fLUY4efds6e1O3IPuKDQ&s"
+            />
+            <div class="info">
+              <h3>Stick War Mod</h3>
+              <p>Strategy Action</p>
+              <p class="rating"><span>★ 4.8</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co6rll.jpg"
+            />
+            <div class="info">
+              <h3>Pure Sniper Mod</h3>
+              <p>Sniper Shooter</p>
+              <p class="rating"><span>★ 4.3</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/8zYazQS-pfRnxSyWRaoS35bdkz8MLVEpU5b3mk7ESv-YXMVMURycjYOqdXyizmfg25k"
+            />
+            <div class="info">
+              <h3>CSR Racing 2 Mod</h3>
+              <p>Racing Simulation</p>
+              <p class="rating"><span>★ 4.7</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="data:image/webp;base64,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"
+            />
+            <div class="info">
+              <h3>Empire Warriors Tower Defense Mod</h3>
+              <p>Tower Defense</p>
+              <p class="rating"><span>★ 4.4</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/y1J3-OrqJIlezTtaung2sPOnHY9wS2hdJh26ADkwcc3kdZy4DTGyv94IN_YRvdKy0y4=s48-rw"
+            />
+            <div class="info">
+              <h3>Asphalt 8 Mod</h3>
+              <p>Arcade Racing</p>
+              <p class="rating"><span>★ 4.6</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="data:image/webp;base64,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"
+            />
+            <div class="info">
+              <h3>Off The Road Mod</h3>
+              <p>Offroad Simulation</p>
+              <p class="rating"><span>★ 4.5</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/86cQqI_vflAIckhMPWltYthLFh4YnemCi5hXm0VCQe4Lbj346-jH3r6uy3lsQtpO9A=s48-rw"
+            />
+            <div class="info">
+              <h3>Car Parking Multiplayer Mod</h3>
+              <p>Driving Simulation</p>
+              <p class="rating"><span>★ 4.8</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/6qJ1yN45JV7mmhrkpNbcUUyK2KmCWMsb7tWgJmFqkIw9i5rPb7UZPVusfeoCh1Wf9sQt"
+            />
+            <div class="info">
+              <h3>Plants vs Zombies 2 Mod</h3>
+              <p>Tower Defense</p>
+              <p class="rating"><span>★ 4.3</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRcb8p7WDgZgFr5Y77CspHP1EUg_e5NQ7zZxQ&s"
+            />
+            <div class="info">
+              <h3>Supreme Duelist Stickman Mod</h3>
+              <p>Action Fighting</p>
+              <p class="rating"><span>★ 4.1</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://i.pinimg.com/736x/5f/b2/1a/5fb21af5e82ee51f1a4301bc1af48bd4.jpg"
+            />
+            <div class="info">
+              <h3>Geometry Dash Mod</h3>
+              <p>Rhythm Platformer</p>
+              <p class="rating"><span>★ 4.1</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcSgFaLwS7dLDSa-RnPJ9DlmElcdKsBKnmh3onnAyg5jNixHzqIQrCwfkJmjvZhghgRXFa3xvChKDGE3hTnZiNzB7bdNx1JkBb9HzcYJeM7rog"
+            />
+            <div class="info">
+              <h3>Dress To Impress Mod</h3>
+              <p>Fashion Simulation</p>
+              <p class="rating"><span>★ 4.9</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://tr.rbxcdn.com/180DAY-d534f430c4f71efc23f14edefcf1f82c/512/512/Image/Webp/noFilter"
+            />
+            <div class="info">
+              <h3>Blox Fruits Mod</h3>
+              <p>Action Adventure</p>
+              <p class="rating"><span>★ 4.2</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/llBEI7f8o5LLOw06bX_SJugnBiGF36ujUjw-xwEGv847-YgT2vnuegLVIOhnh1BTde4=w526-h296-rw"
+            />
+            <div class="info">
+              <h3>Pocket Battle Mod</h3>
+              <p>Strategy RPG</p>
+              <p class="rating"><span>★ 4.8</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcj7ca35tWYdj_9BG7g57c7Cc6D3_ka7SEqQ&s"
+            />
+            <div class="info">
+              <h3>Adopt Me Mod</h3>
+              <p>Role-Playing</p>
+              <p class="rating"><span>★ 4.4</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcThd3qWp0QEJ3-kSt-zAqQyNbLsPFX8YqZkew&s"
+            />
+            <div class="info">
+              <h3>Brawl Stars Mod</h3>
+              <p>Action Multiplayer</p>
+              <p class="rating"><span>★ 4.7</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCRt3rnxB-eZL1rxbWAgrozpjmR8IcmUhd4A&s"
+            />
+            <div class="info">
+              <h3>Epic Plane Evolution Mod</h3>
+              <p>Arcade Idle</p>
+              <p class="rating"><span>★ 4.4</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/iPBTlEiYedfgSadGtWhKD-APzSDRTKtR43qBV4DxBtUUVVjmGBzJbL-PgxP_jIzjfcA=w240-h480-rw"
+            />
+            <div class="info">
+              <h3>Family Life Mod</h3>
+              <p>Life Simulation</p>
+              <p class="rating"><span>★ 4.6</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/IhdYqm155Udee9uVRWonDSLUI79n5e1hXX4nCMtLi7FTPemgvAFZw1j4E_4KwOirHg=s48-rw"
+            />
+            <div class="info">
+              <h3>Mad Skills Motocross 3 Mod</h3>
+              <p>Racing Platformer</p>
+              <p class="rating"><span>★ 4.5</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://hedwig-cf.netmarble.com/forum-common/sololv/slv_en/thumbnail/6faadaa918f64dbaad2f3d7ccd28dba5_1679558250761_lp.jpg"
+            />
+            <div class="info">
+              <h3>Solo Leveling Arise Mod</h3>
+              <p>Action RPG</p>
+              <p class="rating"><span>★ 4.8</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/moj4BLf6If-DG-lLn8y8Agh7ePjSR69OaYuuFViPJshcxArFUiRv1hzQKnWjkNhGTy5l=s48-rw"
+            />
+            <div class="info">
+              <h3>Silent Castle Mod</h3>
+              <p>Horror Strategy</p>
+              <p class="rating"><span>★ 4.3</span></p>
+            </div>
+          </div>
+
+          <div class="card card-inline">
+            <img
+              class="app-icon"
+              src="https://play-lh.googleusercontent.com/heblP1KOzticzIJEsqO8Yp18rwStrIwDSnrJeZNL6m9bYnTOgRvDAQMUmye-0VzXGQ=s48-rw"
+            />
+            <div class="info">
+              <h3>World of Tanks Blitz Mod</h3>
+              <p>Action Shooter</p>
+              <p class="rating"><span>★ 4.1</span></p>
+            </div>
+          </div>
+
+          <div class="card card-stacked">
+            <img
+              class="banner"
+              src="https://i.postimg.cc/qv7s1VVs/gta-5-apk.jpg"
+            />
+            <div class="bottom">
+              <img
+                class="app-icon"
+                src="https://upload.wikimedia.org/wikipedia/en/a/a5/Grand_Theft_Auto_V.png"
+              />
+              <div class="info">
+                <h3>GTA 5 Mobile</h3>
+                <p>Action • Open World</p>
+                <p class="rating"><span>★ 4.8</span></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card card-stacked">
+            <img
+              class="banner"
+              src="https://i.gadgets360cdn.com/large/forza-horizon-4_1528673067172.jpg"
+            />
+            <div class="bottom">
+              <img
+                class="app-icon"
+                src="https://i.ibb.co/bR6gzTfZ/Forza-Horizon-4.png"
+              />
+              <div class="info">
+                <h3>Forza Horizon 4</h3>
+                <p>Racing, Open World</p>
+                <p class="rating"><span>★ 4.3</span></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card card-stacked">
+            <img
+              class="banner"
+              src="https://img.utdstc.com/screen/ee9/109/ee9109e1ec8a4a411614c418b5560e0d67e0dd6e0a21a90e48ac093279db80d2:600"
+            />
+            <div class="bottom">
+              <img
+                class="app-icon"
+                src="https://i.ibb.co/p6PFPqWn/Drive-Zone-Online.webp"
+              />
+              <div class="info">
+                <h3>Drive Zone Online Mod</h3>
+                <p>Racing, Multiplayer</p>
+                <p class="rating"><span>★ 4.3</span></p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>App Details</h2>
+          <img class="app-icon" src="" />
+          <h3></h3>
+          <p class="rating"></p>
+          <div class="buttons">
+            <button class="download-btn">For Android</button>
+            <button class="download-btn">For iOS</button>
+            <button class="download-btn">For Pc</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script>
+    const cards = document.querySelectorAll(".card");
+
+    cards.forEach((card) => {
+      card.onclick = () => {
+        const modal = document.querySelector(".modal");
+        modal.classList.add("show");
+
+        const appImage = card.querySelector("img");
+        const appTitle = card.querySelector("h3");
+        const appCategoryText = card.querySelector("p");
+        const rating = card.querySelector(".rating span");
+
+        if (card.classList.contains("card-stacked")) {
+          modal.querySelector(".app-icon").src =
+            card.querySelector(".bottom img").src;
+        } else {
+          modal.querySelector(".app-icon").src = appImage.src;
+        }
+
+        modal.querySelector("h3").textContent = appTitle.textContent;
+        modal.querySelector("p").textContent = appCategoryText.textContent;
+        modal.querySelector(".rating").textContent = rating.textContent;
+      };
+    });
+
+    document.querySelector(".modal .close").onclick = () => {
+      document.querySelector(".modal").classList.remove("show");
+    };
+
+    // document
+    //   .querySelector(".search-bar input")
+    //   .addEventListener("input", function (e) {
+    //     const searchTerm = e.target.value.toLowerCase();
+    //     const gameCards = document.querySelectorAll(".content .card");
+
+    //     gameCards.forEach((card) => {
+    //       const title = card.querySelector("h3").textContent.toLowerCase();
+
+    //       if (
+    //         title.includes(searchTerm) &&
+    //         !card.classList.contains("card-stacked")
+    //       ) {
+    //         card.style.display = "flex";
+    //       } else {
+    //         card.style.display = "none";
+    //       }
+    //     });
+    //   });
+
+    document
+      .querySelector(".search-bar input")
+      .addEventListener("input", function (e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const gameCards = document.querySelectorAll(".content .card");
+
+        // Remove old message if exists
+        const existingMessage = document.querySelector(".no-results-message");
+        if (existingMessage) existingMessage.remove();
+
+        let visibleCount = 0;
+
+        gameCards.forEach((card) => {
+          const title = card.querySelector("h3").textContent.toLowerCase();
+
+          if (
+            title.includes(searchTerm) &&
+            !card.classList.contains("card-stacked")
+          ) {
+            card.style.display = "flex";
+            visibleCount++;
+          } else {
+            card.style.display = "none";
+          }
+        });
+
+        if (visibleCount === 0) {
+          const content = document.querySelector(".content");
+          const message = document.createElement("div");
+          message.className = "no-results-message";
+          message.textContent =
+            "Oops! No games found. Try searching for a different name.";
+          message.style.padding = "20px";
+          message.style.textAlign = "center";
+          message.style.color = "#555";
+          message.style.fontWeight = "500";
+          content.appendChild(message);
+        }
+      });
+
+    document.querySelector(".nav-item-search").onclick = () => {
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+      // Focus the search input
+      const searchInput = document.querySelector(".search-bar input");
+      if (searchInput) {
+        searchInput.focus();
+      }
+    };
+
+    document.addEventListener("contextmenu", function (e) {
+      e.preventDefault();
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "F12" || (e.ctrlKey && e.shiftKey && e.key === "I")) {
+        e.preventDefault();
+      }
+    });
+  </script>
+</html>
